@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 
 const HR_EMAIL = "RRHH@danaide.com.ar";
-const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
+const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY;
 
 const SYSTEM_PROMPT = (policies) => `Eres DARI, el asistente virtual de Recursos Humanos de Danaide. Sos amable, profesional y conciso.
 
