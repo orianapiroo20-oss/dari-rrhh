@@ -16,7 +16,7 @@ export default async function handler(req, res) {
     return res.json({ text: "¡Hola! Soy DARI 👋 ¿En qué puedo ayudarte?" });
   }
 
-  const userMessage = body?.message?.text || body?.text || "";
+ const userMessage = body?.chat?.messagePayload?.message?.text || body?.message?.text || body?.text || "";
   
   console.log("MENSAJE:", userMessage);
 
