@@ -1,11 +1,24 @@
 export default async function handler(req, res) {
-  if (req.method !== "POST") return res.status(405).send("Method not allowed");
+  // Verificación de Google Chat
+  if (req.method === "GET") {
+    return res.status(200).json({ text: "DARI activo" });
+  }
+
+  if (req.method !== "POST") {
+    return res.status(405).send("Method not allowed");
+  }
 
   const body = req.body;
+  
+  // Mensaje de bienvenida cuando se agrega el bot
+  if (body?.type === "ADDED_TO_SPACE") {
+    return res.json({ text: "¡Hola! Soy DARI, el asistente de Recursos Humanos de Danaide 👋 ¿En qué puedo ayudarte?" });
+  }
+
   const userMessage = body?.message?.text || "";
 
   if (!userMessage) {
-    return res.json({ text: "Hola! Soy DARI, el asistente de RRHH de Danaide. ¿En qué puedo ayudarte?" });
+    return res.json({ text: "¿En qué puedo ayudarte?" });
   }
 
   try {
@@ -20,7 +33,7 @@ export default async function handler(req, res) {
         messages: [
           {
             role: "system",
-            content: `Eres DARI, el asistente virtual de Recursos Humanos de Danaide. Sos amable, profesional y conciso. Respondé siempre en español. Ayudás con políticas internas, pago y compensación, vacaciones y licencias. Si no podés responder, indicá que contacten a RRHH@danaide.com.ar`,
+            content: `Eres DARI, el asistente virtual de Recursos Humanos de Danaide. Sos amable, profesional y conciso. Respondé siempre en español. Ayudás con políticas internas, pago y compensación, vacaciones y licencias. Si no podés responder algo específico de la empresa, indicá que contacten a RRHH@danaide.com.ar`,
           },
           { role: "user", content: userMessage },
         ],
@@ -30,8 +43,8 @@ export default async function handler(req, res) {
     const data = await response.json();
     const reply = data.choices?.[0]?.message?.content || "No pude procesar tu consulta. Contactá a RRHH@danaide.com.ar";
 
-    return res.json({ text: reply });
+    return res.status(200).json({ text: reply });
   } catch (err) {
-    return res.json({ text: "Hubo un error. Por favor contactá a RRHH@danaide.com.ar" });
+    return res.status(200).json({ text: "Hubo un error. Por favor contactá a RRHH@danaide.com.ar" });
   }
 }
