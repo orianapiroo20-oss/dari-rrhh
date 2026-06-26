@@ -44,7 +44,10 @@ export default async function handler(req, res) {
     console.log("GROQ RESPONSE:", JSON.stringify(data));
     const reply = data.choices?.[0]?.message?.content || "No pude responder. Contactá a RRHH@danaide.com.ar";
 
-    return res.status(200).json({ text: reply });
+return res.status(200).json({ 
+  text: reply,
+  thread: { threadKey: body?.chat?.messagePayload?.message?.thread?.name }
+});
   } catch (err) {
     console.log("ERROR:", err.message);
     return res.status(200).json({ text: "Error. Contactá a RRHH@danaide.com.ar" });
