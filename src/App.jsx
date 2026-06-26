@@ -48,30 +48,25 @@ export default function App() {
     setMessages(newMessages);
     setLoading(true);
     try {
-      const sysPrompt = SYSTEM_PROMPT(policies);
-      const contents = newMessages.map((m) => ({
-        role: m.role === "assistant" ? "model" : "user",
-        parts: [{ text: m.content }],
-      }));
       const response = await fetch(
-  "https://api.openai.com/v1/chat/completions",
-  {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${OPENAI_API_KEY}`,
-    },
-    body: JSON.stringify({
-      model: "gpt-4o-mini",
-      messages: [
-        { role: "system", content: sysPrompt },
-        ...newMessages.map((m) => ({ role: m.role, content: m.content })),
-      ],
-    }),
-  }
-);
-const data = await response.json();
-let reply = data.choices?.[0]?.message?.content || "No pude procesar tu consulta.";
+        "https://api.groq.com/openai/v1/chat/completions",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${GROQ_API_KEY}`,
+          },
+          body: JSON.stringify({
+            model: "llama-3.3-70b-versatile",
+            messages: [
+              { role: "system", content: SYSTEM_PROMPT(policies) },
+              ...newMessages.map((m) => ({ role: m.role, content: m.content })),
+            ],
+          }),
+        }
+      );
+      const data = await response.json();
+      let reply = data.choices?.[0]?.message?.content || "No pude procesar tu consulta.";
       const derivar = reply.includes("DERIVAR_RRHH");
       reply = reply.replace("DERIVAR_RRHH", "").trim();
       setMessages((prev) => [...prev, { role: "assistant", content: reply, derivar }]);
@@ -93,7 +88,6 @@ let reply = data.choices?.[0]?.message?.content || "No pude procesar tu consulta
 
   return (
     <div style={{ fontFamily: "'Inter','Segoe UI',sans-serif", height: "100vh", display: "flex", flexDirection: "column", background: "#F0F4FF" }}>
-      {/* HEADER */}
       <div style={{ background: "linear-gradient(135deg,#1E3A8A,#2563EB)", padding: "14px 18px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
           {view !== "home" && (
@@ -112,7 +106,6 @@ let reply = data.choices?.[0]?.message?.content || "No pude procesar tu consulta
         </button>
       </div>
 
-      {/* POLICIES PANEL */}
       {showPoliciesPanel && (
         <div style={{ background: "white", borderBottom: "1px solid #E2E8F0", padding: "16px 18px" }}>
           <div style={{ fontWeight: "600", color: "#1E3A8A", marginBottom: "4px", fontSize: "14px" }}>📋 Políticas de Danaide</div>
@@ -130,7 +123,6 @@ let reply = data.choices?.[0]?.message?.content || "No pude procesar tu consulta
         </div>
       )}
 
-      {/* HOME */}
       {view === "home" && (
         <div style={{ flex: 1, overflowY: "auto", padding: "20px 18px" }}>
           <div style={{ textAlign: "center", marginBottom: "24px" }}>
@@ -167,7 +159,6 @@ let reply = data.choices?.[0]?.message?.content || "No pude procesar tu consulta
         </div>
       )}
 
-      {/* CATEGORY */}
       {view === "category" && activeCategory && (
         <div style={{ flex: 1, overflowY: "auto", padding: "20px 18px" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "20px" }}>
@@ -197,7 +188,6 @@ let reply = data.choices?.[0]?.message?.content || "No pude procesar tu consulta
         </div>
       )}
 
-      {/* CHAT */}
       {view === "chat" && (
         <>
           <div style={{ flex: 1, overflowY: "auto", padding: "16px 18px", display: "flex", flexDirection: "column", gap: "12px" }}>
